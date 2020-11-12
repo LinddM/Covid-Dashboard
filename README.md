@@ -11,7 +11,7 @@ Data Products final project
 
 ## About the Project
 
-The project consists of a data pipeline that processes the 3 csv files, inserts them into a database, and then based on the processed data, builds a dashboard that allows you to analyze the statistics of each of the files.
+The project consists of a data pipeline that processes 3 csv files, inserts them into a database, and then based on the processed data builds a dashboard that allows you to analyze the statistics of each of the files.
 
 ### Built With
 
