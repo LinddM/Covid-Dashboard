@@ -1,13 +1,9 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
 import pydeck as pdk
 import datetime
 import time
-
 
 confirmed = pd.read_csv("confirmed.csv")
 deaths = pd.read_csv("deaths.csv")
@@ -54,19 +50,13 @@ del(deathsmelted2['Province/State'])
 
 recoveredmelted2.notna()
 
-
-
-#print(confirmed_melted.head(10))
 #####----- STREAMLIT INFO -------- #####
 
 st.beta_set_page_config(layout="wide")
 st.title("This app shows COVID recovered, death and confirmed cases per country")
 
 
-
-
 #SELECTBOX
-
 metrics= ['confirmed' , 'deaths' , 'recovered']
 cols = st.selectbox('Covid metric' , metrics)
 
@@ -233,20 +223,3 @@ if cols in metrics:
          map_style="mapbox://styles/mapbox/light-v10",
          )
          map = st.pydeck_chart(r)
-
-         
-
-         
-
-         
-         
-
-         
-
-         
-
-
-
-
-
-
