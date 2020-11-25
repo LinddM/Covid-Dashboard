@@ -5,6 +5,12 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import pydeck as pdk
+import datetime
+import time
+
+data_conf = ('confirmed.csv')
+data_deaths= ('deaths.csv')
+data_recovered = ('recovered.csv')
 
 
 
@@ -25,6 +31,10 @@ confirmed_melted=confirmed_melted.rename(columns={'Lat': 'lat' , 'Long': 'lon'})
 #print(confirmed_melted.head(10))
 #confirmed_melted.to_csv("confirmedMelted.csv")
 
+
+
+
+
 deaths_melted = pd.melt(frame=deaths, id_vars= variables, var_name="fecha",value_name="deaths")
 deaths_melted["deaths"] = deaths_melted["deaths"].astype(int)
 deaths_melted=deaths_melted.rename(columns={'Lat': 'lat' , 'Long': 'lon'})
@@ -33,6 +43,20 @@ recovered_melted = pd.melt(frame=recovered, id_vars= variables, var_name="fecha"
 recovered_melted["recovered"] = recovered_melted["recovered"].astype(int)
 recovered_melted=recovered_melted.rename(columns={'Lat': 'lat' , 'Long': 'lon'})
 
+recoveredmelted2 = recovered_melted
+
+
+
+del(recoveredmelted2['Province/State'])
+#del(recoveredmelted2['Country/Region'])
+#del(recoveredmelted2['fecha'])
+
+
+recoveredmelted2.notna()
+
+
+
+#print(confirmed_melted.head(10))
 #####----- STREAMLIT INFO -------- #####
 
 st.beta_set_page_config(layout="wide")
@@ -74,12 +98,15 @@ if cols in metrics:
          st.bar_chart(deaths_por_pais['deaths'])
          st.text("total por fecha")
          st.write(deaths_por_pais)
+
+         
+         
         
     else:
 
          st.title("recovered cases")
          fecha = st.selectbox("Select date" , recovered_melted['fecha'].unique())
-        
+         #recovered_cases = st.slider("Number of recovered cases", 1 , int(recovered_melted["recovered"].max()))
          pais = st.selectbox("Select country to check data" , recovered_melted['Country/Region'].unique())
          recovered_hasta_la_fecha = recovered_melted[recovered_melted["Country/Region"] == pais][recovered_melted["fecha"] == fecha]
          st.text("Casos recuperados a la fecha :  : " + fecha)
@@ -89,40 +116,71 @@ if cols in metrics:
          st.text("total por fecha")
          st.write(recovered_por_pais)
 
+         total = recovered_melted.loc[recovered_melted['Country/Region'] == pais][recovered_melted["fecha"] == fecha]['recovered'].sum()
+         st.text( "Casos totales en " + pais + "a la fecha : " + fecha)
+         st.text(total)
+         #recovered_cases2 = st.slider("Number of recovered cases", -1 , int(total.max()))
 
-         st.pydeck_chart(pdk.Deck(
-            map_style='mapbox://styles/mapbox/light-v9',
-            initial_view_state=pdk.ViewState(
-                latitude=40.73,
-                longitude=-74,
-                zoom=11,
-                pitch=50,
-            ),
-            layers=[
-                pdk.Layer(
-                    'HexagonLayer',
-                    data=recovered_melted,
-                    get_position= '[Long , Lat]',
-                    radius=200,
-                    elevation_scale=4,
-                    elevation_range=[0, 1000],
-                    pickable=True,
-                    extruded=True,
-
-                ),
-                pdk.Layer(
-                    'ScatterplotLayer',
-                    data=recovered_melted,
-                    get_position='[Long, Lat]',
-                    get_color='[200, 30, 0, 160]',
-                    get_radius=200,
-
-                ),
-            ],
-        ))
+         recovered_melted['fecha'] = pd.to_datetime(recovered_melted['fecha'],format= '%m/%d/%y')
+         fecha2 = datetime.date(20,1,22)
 
 
+         
 
+
+         #st.map(recovered_melted)
+
+
+         view = pdk.ViewState(latitude=0,longitude=0,zoom=0.2,)
+
+         covidLayer = pdk.Layer(
+             "ScatterplotLayer",
+             data=recovered_melted,
+             pickable= False,
+             opacity=0.3,
+             stroked=True,
+             filled=True,
+             radius_scale=10,
+             radius_min_pixels=5,
+             radius_max_pixels=60,
+             line_width_min_pixels=1,
+             get_position=["lon", "lat"],
+             get_radius = metricstoshow,
+             
+             
+             get_fill_color=[252, 136, 3],
+             get_line_color=[255,0,0],
+             tooltip="test test",
+
+         )
+         r = pdk.Deck(
+         layers=[covidLayer],
+         initial_view_state=view,
+         map_style="mapbox://styles/mapbox/light-v10",
+         )
+         map = st.pydeck_chart(r)
+
+         x = recovered_melted['fecha'].__len__
+         for i in range(0,120,1):
+             fecha2 += datetime.timedelta(days=1)
+             covidLayer= recovered_melted[recovered_melted['fecha'] == fecha2.isoformat()]
+             r.update()
+             map.pydeck_chart(r)
+             #st.write("text")
+
+             
+             time.sleep(0.05)
+
+         
+
+         
+
+         
+         
+
+         
+
+         
 
 
 
