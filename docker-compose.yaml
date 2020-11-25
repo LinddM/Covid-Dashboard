@@ -37,9 +37,6 @@ services:
     
     db:
         image: mysql:5.7
-        volumes:
-            # - ./db_data:/var/lib/mysql
-            - ./script/schema.sql #:/docker-entrypoint-initdb.d/1.sql
         restart: always
         ports:
             - 3306:3306
@@ -48,3 +45,10 @@ services:
             MYSQL_DATABASE: test
             MYSQL_USER: test
             MYSQL_PASSWORD: test123
+
+    dashboard:
+        depends_on:
+            - db
+        build: .
+        ports:
+            - 8501:8501

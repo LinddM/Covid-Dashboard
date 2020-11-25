@@ -13,21 +13,36 @@ path2 = os.getcwd() + "/dags/confirmed.csv"
 path3 = os.getcwd() + "/dags/recovered.csv"
 
 def etl_process(**kwargs):
-    engine = db.create_engine("mysql+mysqldb://test:test123@192.168.99.100:3306/test")
+    engine = db.create_engine("mysql+mysqldb://test:test123@192.168.99.100:3306/test") # db
     engine.connect()
 
-    df1 = pd.read_csv(path1)
-    df2 = pd.read_csv(path2)
-    df3 = pd.read_csv(path3)
+    deaths = pd.read_csv(path1)
+    confirmed = pd.read_csv(path2)
+    recovered = pd.read_csv(path3)
+
+    variables = [
+    "Province/State",
+    "Country/Region",
+    "Lat",
+    "Long"
+    ]
+    
+    confirmed_melted = pd.melt(frame=confirmed, id_vars= variables, var_name="fecha",value_name="confirmed")
+    confirmed_melted["confirmed"] = confirmed_melted["confirmed"].astype(int)
+    confirmed_melted=confirmed_melted.rename(columns={'Lat': 'lat' , 'Long': 'lon'})
+
+    deaths_melted = pd.melt(frame=deaths, id_vars= variables, var_name="fecha",value_name="deaths")
+    deaths_melted["deaths"] = deaths_melted["deaths"].astype(int)
+    deaths_melted=deaths_melted.rename(columns={'Lat': 'lat' , 'Long': 'lon'})
+
+    recovered_melted = pd.melt(frame=recovered, id_vars= variables, var_name="fecha",value_name="recovered")
+    recovered_melted["recovered"] = recovered_melted["recovered"].astype(int)
+    recovered_melted=recovered_melted.rename(columns={'Lat': 'lat' , 'Long': 'lon'})
 
     with engine.begin() as connection:
-        df1.to_sql('deaths', con=connection, schema='test', if_exists='replace', index=False)
-        df2.to_sql('confirmed', con=connection, schema='test', if_exists='replace', index=False)
-        df3.to_sql('recovered', con=connection, schema='test', if_exists='replace', index=False)
-
-    engine.execute("SELECT * FROM deaths").fetchall()
-    engine.execute("SELECT * FROM confirmed").fetchall()
-    engine.execute("SELECT * FROM recovered").fetchall()
+        deaths_melted.to_sql('deaths_melted', con=connection, schema='test', if_exists='replace', index=False)
+        confirmed_melted.to_sql('confirmed_melted', con=connection, schema='test', if_exists='replace', index=False)
+        recovered_melted.to_sql('recovered_melted', con=connection, schema='test', if_exists='replace', index=False)
 
 
 dag = DAG('mainDAG', description="Dag to Ingest CSV's",
@@ -67,4 +82,5 @@ etl = PythonOperator(task_id="load_to_db",
                      dag=dag
                      )
 
+# sensor1 >> sensor2 >> sensor3 >> etl
 [sensor1, sensor2, sensor3] >> etl
