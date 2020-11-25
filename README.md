@@ -78,7 +78,7 @@ Insert ```localhost:8080``` or ```<your-docker-machine-ip>:8080```<strong>**</st
 
 Insert ```localhost:8501``` or ```<your-docker-machine-ip>:8501```<strong>**</strong> in your web navigator
 
-<img src="readme_img/dashboard.png">
+<img src="readme_img/streamlit.gif">
 
 Here you can browse COVID-19 stats by metric, date and country
 

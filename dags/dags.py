@@ -16,8 +16,6 @@ def etl_process(**kwargs):
     engine = db.create_engine("mysql+mysqldb://test:test123@192.168.99.100:3306/test") # db
     engine.connect()
 
-    # engine.execute("DROP TABLE IF EXISTS `confirmed_melted`; DROP TABLE IF EXISTS `deaths_melted`; DROP TABLE IF EXISTS `recovered_melted`;")
-
     deaths = pd.read_csv(path1)
     confirmed = pd.read_csv(path2)
     recovered = pd.read_csv(path3)
@@ -45,10 +43,6 @@ def etl_process(**kwargs):
         deaths_melted.to_sql('deaths_melted', con=connection, schema='test', if_exists='replace', index=False)
         confirmed_melted.to_sql('confirmed_melted', con=connection, schema='test', if_exists='replace', index=False)
         recovered_melted.to_sql('recovered_melted', con=connection, schema='test', if_exists='replace', index=False)
-
-    engine.execute("SELECT * FROM deaths_melted").fetchall()
-    engine.execute("SELECT * FROM confirmed_melted").fetchall()
-    engine.execute("SELECT * FROM recovered_melted").fetchall()
 
 
 dag = DAG('mainDAG', description="Dag to Ingest CSV's",
