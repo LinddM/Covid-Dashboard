@@ -60,8 +60,8 @@ if cols in metrics:
         total1 = confirmed_melted.loc[confirmed_melted['Country/Region'] == pais][confirmed_melted["fecha"] == fecha]['confirmed'].sum()
         st.text( "Casos totales en " + pais + " a la fecha : " + fecha)
         st.text(total1)
-        confirmed_melted['fecha'] = pd.to_datetime(confirmed_melted['fecha'],format= '%m/%d/%y')
-        fecha1 = datetime.date(20,1,22)
+        confirmed_melted['fecha'] = pd.to_datetime(confirmed_melted['fecha'],format= '%m/%d/%y', errors="ignore")
+        # fecha1 = datetime.date(20,1,22)
         view = pdk.ViewState(latitude=0,longitude=0,zoom=0.2,)
 
         covidLayer1 = pdk.Layer(
@@ -107,8 +107,8 @@ if cols in metrics:
          total2 = deaths_melted.loc[deaths_melted['Country/Region'] == pais][deaths_melted["fecha"] == fecha]['deaths'].sum()
          st.text( "Muertes totales en " + pais + "a la fecha : " + fecha)
          st.text(total2)
-         deaths_melted['fecha'] = pd.to_datetime(deaths_melted['fecha'],format= '%m/%d/%y')
-         fecha1 = datetime.date(20,1,22)
+         deaths_melted['fecha'] = pd.to_datetime(deaths_melted['fecha'],format= '%m/%d/%y', errors="ignore")
+         # fecha1 = datetime.date(20,1,22)
          view = pdk.ViewState(latitude=0,longitude=0,zoom=0.2,)
 
          covidLayer2 = pdk.Layer(
@@ -163,8 +163,8 @@ if cols in metrics:
          st.text(total)
          #recovered_cases2 = st.slider("Number of recovered cases", -1 , int(total.max()))
 
-         recovered_melted['fecha'] = pd.to_datetime(recovered_melted['fecha'],format= '%m/%d/%y')
-         fecha2 = datetime.date(20,1,22)
+         recovered_melted['fecha'] = pd.to_datetime(recovered_melted['fecha'],format= '%m/%d/%y', errors="ignore")
+         # fecha2 = datetime.date(20,1,22)
 
 
          #st.map(recovered_melted)

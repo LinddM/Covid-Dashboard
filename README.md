@@ -4,6 +4,7 @@ Data Products final project
 
 * [About the Project](#about-the-project)
   * [Built With](#built-with)
+  * [Design](#design)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
@@ -18,6 +19,37 @@ The project consists of a data pipeline that processes 3 csv files, inserts them
 * airflow
 * docker
 * docker-compose
+
+### Design
+
+We basically orchestate airflow and the dashboard inside docker-compose. The usage of the airflow UI is described in the [Usage](#usage) title
+
+#### docker-compose.yaml
+
+It initializes 4 containers:
+
+  - <i> postgres and webserver </i> for airflow
+  - <i> db </i> for mysql
+  - <i> dashboard </i> for streamlit dashboard
+
+#### Dockerfile
+
+It helps us to put our streamlit dashboard inside a docker container to call it in the docker-compose
+
+#### requirements.txt
+
+Contains dependencies to build our streamlit dashboard
+
+#### data.py
+
+Contains the streamlit dashboard that calls its data from a mysql db
+
+#### dags.py
+
+Contains the tasks for the DAG to execute in the airflow UI:
+ 
+ * 3 file sensor for the csv's
+ * 1 python operator to load the csv's data to mysql db
 
 ## Getting Started
 
